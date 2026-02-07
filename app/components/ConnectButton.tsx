@@ -1,0 +1,14 @@
+export default function ConnectButton({ connected, onClick }: { connected: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={connected}
+      className={`w-full px-6 py-3 rounded bg-blue-600 text-white font-semibold transition-opacity ${
+        connected ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+      }`}
+      id="connectBtn"
+    >
+      {connected ? "Connected!" : "CONNECT TO SENSOR"}
+    </button>
+  );
+}
