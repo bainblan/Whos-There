@@ -87,10 +87,6 @@ export default function RandomKnock() {
             </button>
           </div>
 
-          {description && (
-            <div className="text-sm text-gray-600 mt-2">Description: {description}</div>
-          )}
-
           {lastIntervals && (
             <div className="text-xs font-mono text-gray-700">Pattern: {lastIntervals.join(", ")} ms</div>
           )}
