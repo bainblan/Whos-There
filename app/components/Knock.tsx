@@ -120,7 +120,7 @@ export default function Knock() {
     const times = pressTimesRef.current;
     if (times.length < 2) {
       setError("Must record at least 2 knocks.");
-      setRecordPrompt("Too few knocks. Try again!");
+      setRecordPrompt("");
       return;
     }
     const intervals = [];
@@ -336,7 +336,7 @@ export default function Knock() {
           }`}
           id="connectBtn"
         >
-          {connected ? "Connected!" : "Connect to ESP32"}
+          {connected ? "Connected!" : "Connect to Sensor"}
         </button>
         <button
           onClick={handleStartRecording}
@@ -362,9 +362,39 @@ export default function Knock() {
         >
           {testKnocking
             ? "Testing... (K key = knock, Enter = test match)"
-            : "Test Knock (Simulate ESP32)"}
+            : "Test Knock (Simulate Sensor)"}
         </button>
       </div>
+<<<<<<< HEAD
+=======
+      <div className="text-center text-sm mt-2 mb-2 text-yellow-800">{recordPrompt}</div>
+      {recording && (
+        <div className="text-2xl text-yellow-800">
+          <span className="font-mono font-bold">Knocks: {pressTimesRef.current.length}</span>
+        </div>
+      )}
+      {/* Test Knock Knocks Counter */}
+      {testKnocking && (
+        <div className="text-2xl text-purple-800">
+          <span className="font-mono font-bold">Test Knocks: {testPressTimesRef.current.length}</span>
+        </div>
+      )}
+
+      {/* Knock UI Feedback */}
+      <div
+        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center mt-4 ${
+          uiKnockActive
+            ? "bg-green-400 border-green-600"
+            : "bg-gray-200 border-gray-400"
+        } transition-all`}
+        title="Knock Indicator"
+        aria-label="Knock Indicator"
+      >
+        <span className="text-2xl font-bold">
+          {uiKnockActive ? "💡" : "•"}
+        </span>
+      </div>
+>>>>>>> c4145ce931f34a99d02accf62b01f8c9b15b04c7
       {/* Access status – rhythm validation */}
       {accessStatus !== "NONE" && (
         <div
