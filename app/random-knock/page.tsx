@@ -9,6 +9,7 @@ export default function RandomKnock() {
   const [error, setError] = useState<string | null>(null);
   const [lastIntervals, setLastIntervals] = useState<number[] | null>(null);
   const [description, setDescription] = useState<string | null>(null);
+  const [soundType, setSoundType] = useState<"click" | "bell" | "wood">("click");
   const { playSequence, resumeAudio } = useAudio();
 
   const generateAndPlay = async () => {
@@ -34,7 +35,7 @@ export default function RandomKnock() {
       setDescription(desc);
 
       if (intervals && intervals.length > 0) {
-        playSequence(intervals);
+        playSequence(intervals, soundType);
       } else {
         setError("No rhythm returned");
       }
@@ -60,22 +61,48 @@ export default function RandomKnock() {
           {loading ? "Generating..." : "Generate & Play Random Knock"}
         </button>
 
-        {description && (
-          <div className="text-sm text-gray-600 mt-2">Description: {description}</div>
-        )}
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2">
+            <label className="text-sm">Sound:</label>
+            <select
+              value={soundType}
+              onChange={(e) => setSoundType(e.target.value as any)}
+              className="rounded border px-2 py-1 text-sm"
+            >
+              <option value="click">Click</option>
+              <option value="bell">Bell</option>
+              <option value="wood">Wood</option>
+            </select>
+            <button
+              disabled={!lastIntervals}
+              onClick={() => {
+                if (lastIntervals) playSequence(lastIntervals, soundType);
+              }}
+              className={`ml-2 rounded bg-gray-800 px-3 py-1 text-sm text-white ${
+                !lastIntervals ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900"
+              }`}
+            >
+              Replay
+            </button>
+          </div>
 
-        {lastIntervals && (
-          <div className="text-xs font-mono text-gray-700">Pattern: {lastIntervals.join(", ")} ms</div>
-        )}
+          {description && (
+            <div className="text-sm text-gray-600 mt-2">Description: {description}</div>
+          )}
 
-        {error && <div className="text-red-600 text-sm">{error}</div>}
+          {lastIntervals && (
+            <div className="text-xs font-mono text-gray-700">Pattern: {lastIntervals.join(", ")} ms</div>
+          )}
 
-        <Link
-          href="/"
-          className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800"
-        >
-          Back
-        </Link>
+          {error && <div className="text-red-600 text-sm">{error}</div>}
+
+          <Link
+            href="/"
+            className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800"
+          >
+            Back
+          </Link>
+        </div>
       </div>
     </div>
   );
