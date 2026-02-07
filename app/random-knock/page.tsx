@@ -47,14 +47,60 @@ export default function RandomKnock() {
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-8 px-4">
-      <h1 className="text-4xl font-bold tracking-tight">MEMORIZE THE KNOCK PATTERN</h1>
-      <Link
-        href="/"
-        className="rounded-lg bg-sky-400 px-8 py-3 text-lg font-bold text-white"
-      >
-        GENERATE
-      </Link>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4 py-12">
+      <h1 className="text-4xl font-bold tracking-tight">Random Knock</h1>
+
+      <div className="flex flex-col items-center gap-4">
+        <button
+          onClick={generateAndPlay}
+          disabled={loading}
+          className={`rounded-lg bg-sky-500 px-6 py-3 text-lg font-bold text-white transition-opacity ${
+            loading ? "opacity-60 cursor-not-allowed" : "hover:bg-sky-600"
+          }`}
+        >
+          {loading ? "Generating..." : "Generate & Play Random Knock"}
+        </button>
+
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2">
+            <label className="text-sm">Sound:</label>
+            <select
+              value={soundType}
+              onChange={(e) => setSoundType(e.target.value as "knock" | "click" | "bell" | "wood")}
+              className="rounded border px-2 py-1 text-sm"
+            >
+              <option value="knock">Knock</option>
+              <option value="click">Click</option>
+              <option value="bell">Bell</option>
+              <option value="wood">Wood</option>
+            </select>
+            <button
+              disabled={!lastIntervals}
+              onClick={() => {
+                if (lastIntervals) playSequence(lastIntervals, soundType);
+              }}
+              className={`ml-2 rounded bg-gray-800 px-3 py-1 text-sm text-white ${
+                !lastIntervals ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900"
+              }`}
+            >
+              Replay
+            </button>
+          </div>
+
+          {lastIntervals && (
+            <div className="text-xs font-mono text-gray-700">Pattern: {lastIntervals.join(", ")} ms</div>
+          )}
+
+          {error && <div className="text-red-600 text-sm">{error}</div>}
+
+          <Link
+            href="/"
+            className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800"
+          >
+            Back
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
