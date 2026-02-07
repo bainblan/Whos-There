@@ -16,7 +16,7 @@ export default function useAudio(): UseAudio {
   const ctxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const knockBufferRef = useRef<AudioBuffer | null>(null);
-  const knockDurationRef = useRef<number>(0.45); // first knock duration in seconds
+  const knockDurationRef = useRef<number>(0.225); // first knock duration in seconds
   const timeoutsRef = useRef<number[]>([]);
   const [ready, setReady] = useState(false);
 
