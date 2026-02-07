@@ -28,7 +28,31 @@ const rhythmSchema = {
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		const { mode, userPrompt } = body; 
+		const { mode, userPrompt } = body;
+
+		// Validate mode
+		if (!mode || (mode !== "random" && mode !== "custom")) {
+			return NextResponse.json(
+				{ error: "Invalid mode. Must be 'random' or 'custom'" },
+				{ status: 400 }
+			);
+		}
+
+		// Validate userPrompt for custom mode
+		if (mode === "custom") {
+			if (!userPrompt || typeof userPrompt !== "string" || userPrompt.trim() === "") {
+				return NextResponse.json(
+					{ error: "userPrompt is required for custom mode and cannot be empty" },
+					{ status: 400 }
+				);
+			}
+			if (userPrompt.length > 500) {
+				return NextResponse.json(
+					{ error: "userPrompt must be 500 characters or less" },
+					{ status: 400 }
+				);
+			}
+		}
 
 		let promptText = "";
 
@@ -37,7 +61,7 @@ export async function POST(request: Request) {
 		if (mode === "random") {
 			promptText = `Generate a random, catchy, knocking rhythm. ${formatInstruction}`;
 		} else { 
-			promptText = `Generate a knocking rhythm based on this description: "${userPrompt}", ${formatInstruction} Capture the specific vibe or pattern described.`;
+			promptText = `Generate a knocking rhythm based on this description: "${userPrompt.trim()}", ${formatInstruction} Capture the specific vibe or pattern described.`;
 		}
 
 		const model = genAI.getGenerativeModel({
