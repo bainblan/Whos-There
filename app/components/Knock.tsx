@@ -37,12 +37,13 @@ export default function Knock() {
   // Timing for knock recording
   const pressTimesRef = useRef<number[]>([]);
 
-  // Handle space bar knock password entry
+  // Handle K key knock password entry
   React.useEffect(() => {
     if (!recording) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.key === " ") {
+      // Only accept 'k' or 'K' key (code "KeyK"); ignore space and others.
+      if (e.code === "KeyK") {
         const now = performance.now();
         pressTimesRef.current.push(now);
         setUiKnockActive(true);
@@ -50,7 +51,7 @@ export default function Knock() {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.key === " ") {
+      if (e.code === "KeyK") {
         setUiKnockActive(false);
       }
     };
@@ -64,9 +65,9 @@ export default function Knock() {
     };
   }, [recording]);
 
-  // Finish recording on double-esc or after set time
+  // Start recording on button click
   const handleStartRecording = () => {
-    setRecordPrompt("Recording knock password: Press and release spacebar for each knock. Press Enter to finish.");
+    setRecordPrompt("Recording knock password: Press and release the K key for each knock. Press Enter to finish.");
     setRecording(true);
     setAccessStatus("NONE");
     pressTimesRef.current = [];
@@ -208,7 +209,9 @@ export default function Knock() {
         id="recordBtn"
         tabIndex={0}
       >
-        {recording ? "Recording... (Space bar = knock, Enter = done)" : "Record Knock Password"}
+        {recording
+          ? "Recording... (K key = knock, Enter = done)"
+          : "Record Knock Password"}
       </button>
       <div className="text-center text-sm mt-2 mb-2 text-yellow-800">{recordPrompt}</div>
       {recording && (
