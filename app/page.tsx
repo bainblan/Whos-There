@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Knock from "./components/Knock";
 
 export default function Home() {
   return (
@@ -12,8 +13,9 @@ export default function Home() {
         priority
       />
       <div className="w-full max-w-lg rounded-lg border border-foreground/10 bg-foreground/5 p-6">
-        <p className="text-center text-foreground/60">No messages yet.</p>
+        <p className="text-center text-foreground/60">Use your knock to unlock door.</p>
       </div>
+      <Knock />
       <input
         type="text"
         placeholder="Type a message..."
