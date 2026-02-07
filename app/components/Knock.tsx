@@ -185,6 +185,7 @@ export default function Knock() {
 
     // 2. Rhythm Validation
     if (data.startsWith("DATA:")) {
+      alert(data);
       const csvPart = data.split(":")[1];
       const intervals = csvPart.split(",").map(Number);
 
