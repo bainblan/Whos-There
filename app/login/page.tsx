@@ -2,16 +2,36 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabaseClient"; // ✅ ADD
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 🔧 CHANGED: async + Supabase logic added (no code removed)
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim()) {
-      router.push("/set-knock");
+
+    if (!username.trim()) return;
+
+    // ✅ ensure user session (anonymous for demo)
+    let { data } = await supabase.auth.getSession();
+    let session = data.session;
+
+    if (!session) {
+      await supabase.auth.signInAnonymously();
+      session = (await supabase.auth.getSession()).data.session;
     }
+
+    if (!session) return;
+
+    // ✅ WRITE USERNAME TO DATABASE
+    await supabase.from("Username").upsert({
+      id: session.user.id,
+      username: username.trim(),
+    });
+
+    router.push("/set-knock");
   };
 
   return (

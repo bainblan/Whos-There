@@ -1,0 +1,4 @@
+# rename to ".env.local"
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY= # in google doc
+NEXT_PUBLIC_SUPABASE_URL= # in google doc
