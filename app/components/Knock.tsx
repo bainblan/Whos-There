@@ -46,7 +46,7 @@ export default function Knock() {
 
   return (
     <div className="flex flex-col items-center gap-8 mt-10">
-      <h1 className="text-3xl font-bold">ESP32 Web Serial Touch Demo</h1>
+      <h1 className="text-3xl font-bold">Knock Demo</h1>
       <button
         onClick={handleConnect}
         disabled={connected}
