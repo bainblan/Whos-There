@@ -1,22 +1,23 @@
+/// <reference types="node" />
 import {NextResponse } from "next/server"; 
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
 //initialize google generative ai client 
-const genAI = new GoogleGenerativeAI(process.en.GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 //rhythm schema 
 const rhythmSchema = { 
 	description: "Rhythm data for a door knocker", 
-	type: SchemaType.OBJECT
+	type: SchemaType.OBJECT,
 	properties: {
 		description: {
 			type: SchemaType.STRING,
-			description: "short name for rhythm" 
+			description: "short name for rhythm",
 			nullable: false,
 		},
 		intervals: {
 			type: SchemaType.ARRAY, 
-			description: "An array of integers representing the milliseconds of silence between each knock."
+			description: "An array of integers representing the milliseconds of silence between each knock.",
 			items: { type: SchemaType.NUMBER },
 			nullable: false,
 		},
@@ -34,9 +35,9 @@ export async function POST(request: Request) {
 		const formatInstruction = "Return the rhythm strictly as a list of time intervals (in milliseconds) representing the silence between impacts.";
 
 		if (mode === "random") {
-			promptText = 'Generate a random, catchy, knocking rhythm. ${formatInstruction}';
+			promptText = `Generate a random, catchy, knocking rhythm. ${formatInstruction}`;
 		} else { 
-			promptText = 'Generate a knocking rhythm based on this description: "${userPrompt}", ${formatInstruction} Capture the specific vibe or pattern described.';
+			promptText = `Generate a knocking rhythm based on this description: "${userPrompt}", ${formatInstruction} Capture the specific vibe or pattern described.`;
 		}
 
 		const model = genAI.getGenerativeModel({
