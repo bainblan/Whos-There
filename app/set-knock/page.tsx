@@ -41,6 +41,11 @@ export default function SetKnock() {
   const [recordPrompt, setRecordPrompt] = useState<string>("");
   const [recordedRhythm, setRecordedRhythm] = useState<number[]>([]);
 
+  // AI Generation State
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiDescription, setAiDescription] = useState<string | null>(null);
+
   // LOCAL TEST MODE STATE FOR KNOCK MATCHING
   const [testKnocking, setTestKnocking] = useState(false);
   const [testPrompt, setTestPrompt] = useState<string>("");
@@ -117,6 +122,7 @@ export default function SetKnock() {
     pressTimesRef.current = [];
     setRecordedRhythm([]);
     setError(null);
+    setAiDescription(null); // Clear AI text if manual recording starts
   };
 
   const handleFinishRecording = () => {
@@ -140,6 +146,75 @@ export default function SetKnock() {
     setRecordedRhythm([]);
   };
 
+  // --- AI GENERATION LOGIC ---
+  const handleAiSubmit = async (e?: React.KeyboardEvent) => {
+    if (e && e.key !== "Enter") return;
+    if (!aiPrompt.trim()) return;
+
+    setAiLoading(true);
+    setError(null);
+    setAiDescription(null);
+
+    try {
+      const res = await fetch("/api/rhythm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "custom",
+          userPrompt: aiPrompt,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate rhythm");
+      }
+
+      // Success! Update the password
+      setKnockPassword(data.intervals);
+      setAiDescription(data.description);
+      setRecordPrompt("AI Rhythm Loaded! Try 'Test Knock' to verify.");
+      
+    } catch (err: any) {
+      setError("AI Error: " + err.message);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Helper to hear the AI rhythm (Simple beep)
+  const playCurrentRhythm = () => {
+    if (!knockPassword) return;
+    
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new AudioCtx();
+    const startTime = ctx.currentTime;
+
+    // First knock is immediate
+    playTone(ctx, startTime);
+
+    let currentDelay = 0;
+    knockPassword.forEach((interval) => {
+      currentDelay += interval / 1000;
+      playTone(ctx, startTime + currentDelay);
+    });
+  };
+
+  const playTone = (ctx: AudioContext, time: number) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 150; // Low thud
+    osc.type = "square";
+    gain.gain.setValueAtTime(1, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.1);
+  };
+  // ---------------------------
+
   // Listen for Enter key to finish recording
   React.useEffect(() => {
     if (!recording) return;
@@ -153,7 +228,7 @@ export default function SetKnock() {
     // eslint-disable-next-line
   }, [recording]);
 
-  // TEST: Listen for Enter key to finish 'test knock', and trigger local validation
+  // TEST: Listen for Enter key to finish 'test knock'
   React.useEffect(() => {
     if (!testKnocking) return;
     const onEnter = (e: KeyboardEvent) => {
@@ -329,14 +404,47 @@ export default function SetKnock() {
           {error && (
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}
-          <input
-            type="text"
-            placeholder="Ask the magical AI..."
-            className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30"
-          />
-          <div className="w-full rounded-lg border border-foreground/10 bg-foreground/5 p-4 min-h-[80px]">
-            <p className="text-foreground/60">AI response will appear here.</p>
+          
+          {/* AI INPUT SECTION */}
+          <div className="flex flex-col gap-2 mt-4">
+             <div className="flex gap-2">
+                <input
+                    type="text"
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    onKeyDown={handleAiSubmit}
+                    disabled={aiLoading}
+                    placeholder="Ask the magical AI for a rhythm..."
+                    className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30 disabled:opacity-50"
+                />
+                <button 
+                  onClick={() => handleAiSubmit()} 
+                  disabled={aiLoading || !aiPrompt}
+                  className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {aiLoading ? "..." : "Go"}
+                </button>
+             </div>
+
+            <div className="w-full rounded-lg border border-foreground/10 bg-foreground/5 p-4 min-h-[80px] flex items-center justify-between">
+                <div>
+                  {aiDescription ? (
+                    <p className="text-foreground font-semibold">{aiDescription}</p>
+                  ) : (
+                    <p className="text-foreground/60">AI response will appear here.</p>
+                  )}
+                </div>
+                {aiDescription && knockPassword && (
+                    <button 
+                       onClick={playCurrentRhythm}
+                       className="ml-4 p-2 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-bold"
+                    >
+                       ▶ Play
+                    </button>
+                )}
+            </div>
           </div>
+
         </div>
       </div>
     </div>
