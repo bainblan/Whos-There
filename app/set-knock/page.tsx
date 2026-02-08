@@ -409,7 +409,7 @@ export default function SetKnock() {
           <ConnectButton
             connected={connected}
             onClick={handleConnect}
-            disabled={recording}
+            disabled={recording || testKnocking}
           />
           <TestKnockButton
             testing={testKnocking}
@@ -423,7 +423,7 @@ export default function SetKnock() {
           )}
           <AccessStatus status={accessStatus} />
           <BackButton
-            disabled={recording}
+            disabled={recording || testKnocking}
             onClick={async () => {
               await fetch("/api/auth/logout", {
                 method: "POST",
