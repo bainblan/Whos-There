@@ -81,14 +81,14 @@ export default function Login() {
           <button
             type="button"
             onClick={handleLogin}
-            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white"
+            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer"
           >
             LOGIN
           </button>
           <button
             type="button"
             onClick={handleCreateAccount}
-            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white"
+            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer"
           >
             CREATE ACCOUNT
           </button>

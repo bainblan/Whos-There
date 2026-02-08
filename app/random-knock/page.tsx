@@ -80,7 +80,7 @@ export default function RandomKnock() {
                 if (lastIntervals) playSequence(lastIntervals, soundType);
               }}
               className={`ml-2 rounded bg-gray-800 px-3 py-1 text-sm text-white ${
-                !lastIntervals ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900"
+                !lastIntervals ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900 cursor-pointer"
               }`}
             >
               Replay
@@ -95,7 +95,7 @@ export default function RandomKnock() {
 
           <Link
             href="/"
-            className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800"
+            className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800 cursor-pointer"
           >
             Back
           </Link>

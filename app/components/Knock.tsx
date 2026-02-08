@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Door from "./Door";
-import BackButton from "./BackButton";
+import BackButton from "./LogoutButton";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 

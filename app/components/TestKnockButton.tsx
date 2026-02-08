@@ -3,7 +3,7 @@ export default function TestKnockButton({ testing, onClick }: { testing: boolean
     <button
       onClick={onClick}
       disabled={testing}
-      className={`w-full px-6 py-3 rounded bg-purple-600 text-white font-semibold transition-opacity ${
+      className={`w-full px-6 py-3 rounded bg-purple-600 cursor-pointer text-white font-semibold transition-opacity ${
         testing ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
       }`}
       id="testKnockBtn"

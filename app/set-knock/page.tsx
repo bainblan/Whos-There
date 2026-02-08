@@ -6,7 +6,7 @@ import ConnectButton from "../components/ConnectButton";
 import RecordButton from "../components/RecordButton";
 import TestKnockButton from "../components/TestKnockButton";
 import AccessStatus from "../components/AccessStatus";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/LogoutButton";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
