@@ -7,6 +7,7 @@ import RecordButton from "../components/RecordButton";
 import TestKnockButton from "../components/TestKnockButton";
 import AccessStatus from "../components/AccessStatus";
 import BackButton from "../components/BackButton";
+import useAudio from "../../lib/useAudio";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -50,6 +51,8 @@ export default function SetKnock() {
   const [testKnocking, setTestKnocking] = useState(false);
   const [testPrompt, setTestPrompt] = useState<string>("");
   const testPressTimesRef = useRef<number[]>([]);
+
+  const { playSequence, resumeAudio } = useAudio();
 
   // Timing for knock recording
   const pressTimesRef = useRef<number[]>([]);
@@ -184,34 +187,10 @@ export default function SetKnock() {
   };
 
   // Helper to hear the AI rhythm (Simple beep)
-  const playCurrentRhythm = () => {
+  const playCurrentRhythm = async () => {
     if (!knockPassword) return;
-    
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AudioCtx();
-    const startTime = ctx.currentTime;
-
-    // First knock is immediate
-    playTone(ctx, startTime);
-
-    let currentDelay = 0;
-    knockPassword.forEach((interval) => {
-      currentDelay += interval / 1000;
-      playTone(ctx, startTime + currentDelay);
-    });
-  };
-
-  const playTone = (ctx: AudioContext, time: number) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = 150; // Low thud
-    osc.type = "square";
-    gain.gain.setValueAtTime(1, time);
-    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(time);
-    osc.stop(time + 0.1);
+    await resumeAudio();
+    playSequence(knockPassword, "knock");
   };
   // ---------------------------
 
