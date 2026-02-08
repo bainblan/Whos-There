@@ -52,7 +52,7 @@ export default function SetKnock() {
   const [testPrompt, setTestPrompt] = useState<string>("");
   const testPressTimesRef = useRef<number[]>([]);
 
-  const { playSequence, resumeAudio } = useAudio();
+  const { playSequence, resumeAudio, playClick } = useAudio();
 
   // Timing for knock recording
   const pressTimesRef = useRef<number[]>([]);
@@ -71,6 +71,7 @@ export default function SetKnock() {
         const now = performance.now();
         pressTimesRef.current.push(now);
         setUiKnockActive(true);
+        playClick("knock");
       }
     };
 
@@ -98,6 +99,7 @@ export default function SetKnock() {
         const now = performance.now();
         testPressTimesRef.current.push(now);
         setUiKnockActive(true);
+        playClick("knock");
       }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -116,7 +118,8 @@ export default function SetKnock() {
   }, [testKnocking]);
 
   // Start recording on button click
-  const handleStartRecording = () => {
+  const handleStartRecording = async () => {
+    await resumeAudio();
     setRecordPrompt(
       "Start knocking the K key for each beat of your pattern. Press Enter when finished."
     );
@@ -294,7 +297,8 @@ export default function SetKnock() {
   };
 
   // TEST: handle test knock button click
-  const handleStartTestKnocking = () => {
+  const handleStartTestKnocking = async () => {
+    await resumeAudio();
     setTestPrompt(
       "Start knocking the K key to test your pattern. Press Enter when finished."
     );
