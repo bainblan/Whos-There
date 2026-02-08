@@ -73,21 +73,22 @@ export default function Login() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-8 px-4">
-      <h1 className="text-4xl font-bold tracking-tight">Welcome</h1>
+      <h1 className="fade-in text-4xl font-bold tracking-tight">Welcome</h1>
       <form className="flex w-full max-w-sm flex-col gap-4">
         <input
           type="text"
           placeholder="Enter username..."
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30"
+          className="fade-in rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30"
+          style={{ animationDelay: "0.15s" }}
         />
         {error && (
           <div className="text-red-600 text-sm font-semibold rounded bg-red-50 px-3 py-2">
             {error}
           </div>
         )}
-        <div className="flex gap-4">
+        <div className="fade-in flex gap-4" style={{ animationDelay: "0.3s" }}>
           <button
             type="button"
             onClick={handleLogin}

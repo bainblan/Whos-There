@@ -383,61 +383,73 @@ export default function SetKnock() {
 
   return (
     <div className="flex min-h-screen flex-col gap-24 items-center py-12 px-4">
-      <h1 className="text-5xl font-bold text-center">
+      <h1 className="fade-in text-5xl font-bold text-center" style={{ animationDelay: "0.15s" }}>
         Welcome to {sessionUsername ?? "Unkown"}&apos;s Home
       </h1>
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-32">
-        <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
+        <div className="fade-in" style={{ animationDelay: "0.25s" }}>
+          <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
+        </div>
         <div className="flex w-full max-w-2xl flex-col gap-4">
-          <RecordButton
-            recording={recording}
-            onClick={handleStartRecording}
-            disabled={testKnocking}
-            onMagicGenerated={(intervals, description) => {
-              setKnockPassword(intervals);
-              setAiDescription(description);
-              setRecordPrompt("Random Rhythm Loaded! Try 'Test Knock' to verify.");
-              setError(null);
-            }}
-            onMagicError={(msg) => setError("Magic Error: " + msg)}
-          />
+          <div className="fade-in" style={{ animationDelay: "0.3s" }}>
+            <RecordButton
+              recording={recording}
+              onClick={handleStartRecording}
+              disabled={testKnocking}
+              onMagicGenerated={(intervals, description) => {
+                setKnockPassword(intervals);
+                setAiDescription(description);
+                setRecordPrompt("Random Rhythm Loaded! Try 'Test Knock' to verify.");
+                setError(null);
+              }}
+              onMagicError={(msg) => setError("Magic Error: " + msg)}
+            />
+          </div>
           {recording && recordPrompt && (
             <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">
               {recordPrompt}
             </div>
           )}
-          <ConnectButton
-            connected={connected}
-            onClick={handleConnect}
-            disabled={recording || testKnocking}
-          />
-          <TestKnockButton
-            testing={testKnocking}
-            onClick={handleStartTestKnocking}
-            disabled={recording}
-          />
+          <div className="fade-in" style={{ animationDelay: "0.45s" }}>
+            <ConnectButton
+              connected={connected}
+              onClick={handleConnect}
+              disabled={recording || testKnocking}
+            />
+          </div>
+          <div className="fade-in" style={{ animationDelay: "0.6s" }}>
+            <TestKnockButton
+              testing={testKnocking}
+              onClick={handleStartTestKnocking}
+              disabled={recording}
+            />
+          </div>
           {testKnocking && testPrompt && (
             <div className="w-full text-center text-base text-purple-800 bg-purple-50 py-2 rounded mb-2 font-mono border border-purple-200">
               {testPrompt}
             </div>
           )}
-          <AccessStatus status={accessStatus} />
-          <BackButton
-            disabled={recording || testKnocking}
-            onClick={async () => {
-              await fetch("/api/auth/logout", {
-                method: "POST",
-                credentials: "include",
-              });
-              router.push("/login");
-            }}
-          />
+          <div className="fade-in" style={{ animationDelay: "0.75s" }}>
+            <AccessStatus status={accessStatus} />
+          </div>
+          <div className="fade-in" style={{ animationDelay: "0.9s" }}>
+            <BackButton
+              disabled={recording || testKnocking}
+              onClick={async () => {
+                await fetch("/api/auth/logout", {
+                  method: "POST",
+                  credentials: "include",
+                });
+                router.push("/login");
+              }}
+            />
+          </div>
           {error && (
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}
-          
+
           {/* AI INPUT SECTION */}
-          <div className="flex flex-col gap-2 mt-4">
+          <div className="fade-in flex flex-col gap-2 mt-4" style={{ animationDelay: "1.05s" }}>
              <div className="flex gap-2">
                 <input
                     type="text"
@@ -448,8 +460,8 @@ export default function SetKnock() {
                     placeholder="Ask the magical AI for a rhythm..."
                     className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30 disabled:opacity-50"
                 />
-                <button 
-                  onClick={() => handleAiSubmit()} 
+                <button
+                  onClick={() => handleAiSubmit()}
                   disabled={aiLoading || !aiPrompt}
                   className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
@@ -466,7 +478,7 @@ export default function SetKnock() {
                   )}
                 </div>
                 {aiDescription && knockPassword && (
-                    <button 
+                    <button
                        onClick={playCurrentRhythm}
                        className="ml-4 p-2 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-bold"
                     >

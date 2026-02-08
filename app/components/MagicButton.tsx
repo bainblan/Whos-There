@@ -37,13 +37,30 @@ export default function MagicButton({ disabled, onGenerated, onError }: MagicBut
         }
     };
 
+    if (loading) {
+        return (
+            <button
+                disabled
+                className="flex-1 px-6 py-3 rounded bg-yellow-500 text-white font-semibold cursor-not-allowed opacity-50"
+            >
+                Generating...
+            </button>
+        );
+    }
+
     return (
         <button
             onClick={handleClick}
-            disabled={disabled || loading}
-            className="flex-1 px-6 py-3 rounded bg-yellow-500 text-white font-semibold hover:bg-yellow-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-            {loading ? "Generating..." : "MAGIC"}
-        </button>
+            disabled={disabled}
+            className={`flex-1 btn-flip cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+            data-front="MAGIC"
+            data-back="MAGIC"
+            style={{
+                "--flip-front-bg": "#eab308",
+                "--flip-front-color": "#ffffff",
+                "--flip-back-bg": "#ffffff",
+                "--flip-back-color": "#eab308",
+            } as React.CSSProperties}
+        />
     );
 }
