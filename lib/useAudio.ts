@@ -108,7 +108,7 @@ export default function useAudio(): UseAudio {
       const slapFilter = ctx.createBiquadFilter();
       slapFilter.type = "bandpass";
       slapFilter.frequency.value = 1200;
-      slapFilter.Q = 1.5;
+      slapFilter.Q.value = 1.5;
 
       const slapGain = ctx.createGain();
       slapGain.gain.setValueAtTime(0.6, now);
