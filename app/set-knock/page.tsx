@@ -298,7 +298,7 @@ export default function SetKnock() {
   return (
     <div className="flex min-h-screen flex-col gap-24 items-center py-12 px-4">
       <h1 className="text-5xl font-bold text-center">
-        {`Welcome to ${typeof window !== "undefined" && window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "Magic"}'s Home`}
+        Welcome to XXX's Home
       </h1>
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-64">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
