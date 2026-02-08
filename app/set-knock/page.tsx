@@ -109,7 +109,9 @@ export default function SetKnock() {
 
   // Start recording on button click
   const handleStartRecording = () => {
-    setRecordPrompt("");
+    setRecordPrompt(
+      "Start knocking the K key for each beat of your pattern. Press Enter when finished."
+    );
     setRecording(true);
     setAccessStatus("NONE");
     pressTimesRef.current = [];
@@ -123,7 +125,7 @@ export default function SetKnock() {
     const times = pressTimesRef.current;
     if (times.length < 2) {
       setError("Must record at least 2 knocks.");
-      setRecordPrompt("");
+      setRecordPrompt("Too few knocks! Press 'RECORD' and try again.");
       return;
     }
     const intervals = [];
@@ -239,7 +241,9 @@ export default function SetKnock() {
 
   // TEST: handle test knock button click
   const handleStartTestKnocking = () => {
-    setTestPrompt("");
+    setTestPrompt(
+      "Start knocking the K key to test your pattern. Press Enter when finished."
+    );
     setTestKnocking(true);
     setError(null);
     setAccessStatus("NONE");
@@ -255,7 +259,7 @@ export default function SetKnock() {
     const times = testPressTimesRef.current;
     if (times.length < 2) {
       setError("Must perform at least 2 test knocks.");
-      setTestPrompt("Too few knocks. Try again!");
+      setTestPrompt("Too few knocks! Press 'TEST KNOCK' and try again.");
       return;
     }
     const intervals: number[] = [];
@@ -293,15 +297,35 @@ export default function SetKnock() {
 
   return (
     <div className="flex min-h-screen flex-col gap-24 items-center py-12 px-4">
-      <h1 className="text-5xl font-bold text-center">RECORD YOUR KNOCK</h1>
+      <h1 className="text-5xl font-bold text-center">
+        Welcome to XXX's Home
+      </h1>
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-64">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
         <div className="flex w-full max-w-2xl flex-col gap-4">
           <RecordButton recording={recording} onClick={handleStartRecording} />
-          <ConnectButton connected={connected} onClick={handleConnect} />
-          <TestKnockButton testing={testKnocking} onClick={handleStartTestKnocking} />
+          {recording && recordPrompt && (
+            <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">
+              {recordPrompt}
+            </div>
+          )}
+          <ConnectButton
+            connected={connected}
+            onClick={handleConnect}
+            disabled={recording}
+          />
+          <TestKnockButton
+            testing={testKnocking}
+            onClick={handleStartTestKnocking}
+            disabled={recording}
+          />
+          {testKnocking && testPrompt && (
+            <div className="w-full text-center text-base text-purple-800 bg-purple-50 py-2 rounded mb-2 font-mono border border-purple-200">
+              {testPrompt}
+            </div>
+          )}
           <AccessStatus status={accessStatus} />
-          <BackButton />
+          <BackButton disabled={recording} />
           {error && (
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}

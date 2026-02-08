@@ -1,4 +1,13 @@
-export default function ConnectButton({ connected, onClick }: { connected: boolean; onClick: () => void }) {
+export default function ConnectButton({
+  connected,
+  onClick,
+  disabled: externalDisabled = false,
+}: {
+  connected: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  const disabled = connected || externalDisabled;
   return (
     <button
       onClick={onClick}

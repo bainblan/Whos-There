@@ -1,4 +1,13 @@
-export default function TestKnockButton({ testing, onClick }: { testing: boolean; onClick: () => void }) {
+export default function TestKnockButton({
+  testing,
+  onClick,
+  disabled: externalDisabled = false,
+}: {
+  testing: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  const disabled = testing || externalDisabled;
   return (
     <button
       onClick={onClick}

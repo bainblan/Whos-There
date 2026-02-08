@@ -29,7 +29,7 @@ export default function Login() {
       return;
     }
 
-    // You might want to set session here as in original logic, can add if needed
+    window.localStorage.setItem("username", name);
     router.push("/set-knock");
   };
 
@@ -58,6 +58,7 @@ export default function Login() {
       username: name,
     });
 
+    window.localStorage.setItem("username", name);
     router.push("/set-knock");
   };
 
