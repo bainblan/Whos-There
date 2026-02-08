@@ -389,7 +389,11 @@ export default function SetKnock() {
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-32">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
         <div className="flex w-full max-w-2xl flex-col gap-4">
-          <RecordButton recording={recording} onClick={handleStartRecording} />
+          <RecordButton
+            recording={recording}
+            onClick={handleStartRecording}
+            disabled={testKnocking}
+          />
           {recording && recordPrompt && (
             <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">
               {recordPrompt}
@@ -398,7 +402,7 @@ export default function SetKnock() {
           <ConnectButton
             connected={connected}
             onClick={handleConnect}
-            disabled={recording}
+            disabled={recording || testKnocking}
           />
           <TestKnockButton
             testing={testKnocking}
@@ -412,7 +416,7 @@ export default function SetKnock() {
           )}
           <AccessStatus status={accessStatus} />
           <BackButton
-            disabled={recording}
+            disabled={recording || testKnocking}
             onClick={async () => {
               await fetch("/api/auth/logout", {
                 method: "POST",

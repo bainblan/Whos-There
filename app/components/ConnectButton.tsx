@@ -11,9 +11,9 @@ export default function ConnectButton({
   return (
     <button
       onClick={onClick}
-      disabled={connected}
+      disabled={disabled}
       className={`w-full px-6 py-3 rounded cursor-pointer bg-blue-600 text-white font-semibold transition-opacity ${
-        connected ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
       }`}
       id="connectBtn"
     >
