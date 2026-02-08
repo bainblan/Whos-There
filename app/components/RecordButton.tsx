@@ -15,7 +15,11 @@ export default function RecordButton({ recording, onClick }: { recording: boolea
           : "RECORD"}
       </button>
       <button
-        className="flex-1 px-6 py-3 rounded bg-yellow-500 text-white font-semibold hover:bg-yellow-600"
+        type="button"
+        disabled={recording}
+        className={`flex-1 px-6 py-3 rounded bg-yellow-500 text-white font-semibold transition-opacity ${
+          recording ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-600"
+        }`}
       >
         MAGIC
       </button>

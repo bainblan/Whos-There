@@ -1,10 +1,19 @@
-export default function TestKnockButton({ testing, onClick }: { testing: boolean; onClick: () => void }) {
+export default function TestKnockButton({
+  testing,
+  onClick,
+  disabled: externalDisabled = false,
+}: {
+  testing: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  const disabled = testing || externalDisabled;
   return (
     <button
       onClick={onClick}
-      disabled={testing}
+      disabled={disabled}
       className={`w-full px-6 py-3 rounded bg-purple-600 text-white font-semibold transition-opacity ${
-        testing ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
       }`}
       id="testKnockBtn"
       tabIndex={0}
