@@ -92,13 +92,6 @@ export default function RandomKnock() {
           )}
 
           {error && <div className="text-red-600 text-sm">{error}</div>}
-
-          <Link
-            href="/"
-            className="mt-6 rounded-lg bg-gray-200 px-6 py-2 text-sm font-semibold text-gray-800 cursor-pointer"
-          >
-            Back
-          </Link>
         </div>
       </div>
     </div>
