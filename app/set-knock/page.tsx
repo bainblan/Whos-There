@@ -9,6 +9,7 @@ import TestKnockButton from "../components/TestKnockButton";
 import AccessStatus from "../components/AccessStatus";
 import BackButton from "../components/BackButton";
 import { getSession } from "../../lib/session";
+import { supabase } from "../../lib/supabaseClient";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -63,12 +64,31 @@ export default function SetKnock() {
     knockPasswordRef.current = knockPassword;
   }, [knockPassword]);
 
-  // Load session username from JWT cookie for welcome message
+  // Load session username and knock pattern from JWT cookie
   useEffect(() => {
     getSession().then((session) => {
       setSessionUsername(session?.username ?? null);
+      const pattern = session?.knockPattern;
+      if (pattern && pattern.length > 0) {
+        const intervals = pattern.split(",").map(Number);
+        setKnockPassword(intervals);
+      } else {
+        setAccessStatus("GRANTED");
+      }
     });
   }, []);
+
+  // Save knock pattern to Supabase for the current user
+  const saveKnockPattern = async (intervals: number[]) => {
+    if (!sessionUsername) return;
+    const { error: dbError } = await supabase
+      .from("Username")
+      .update({ knock_pattern: intervals.join(",") })
+      .eq("username", sessionUsername);
+    if (dbError) {
+      console.error("Failed to save knock pattern:", dbError.message);
+    }
+  };
 
   // Handle K key knock password entry
   React.useEffect(() => {
@@ -129,7 +149,6 @@ export default function SetKnock() {
       "Start knocking the K key for each beat of your pattern. Press Enter when finished."
     );
     setRecording(true);
-    setAccessStatus("NONE");
     pressTimesRef.current = [];
     setRecordedRhythm([]);
     setError(null);
@@ -150,6 +169,7 @@ export default function SetKnock() {
       intervals.push(Math.round(times[i] - times[i - 1]));
     }
     setKnockPassword(intervals);
+    saveKnockPattern(intervals);
     console.log("Set Knock Pattern:", intervals.join(", "), "ms");
     setRecordPrompt("");
     setError(null);
@@ -189,6 +209,7 @@ export default function SetKnock() {
 
       if (intervals.length > 0) {
         setKnockPassword(intervals);
+        saveKnockPattern(intervals);
         setAiDescription(description);
         setRecordPrompt(
           isRandom
@@ -403,20 +424,23 @@ export default function SetKnock() {
           <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
         </div>
         <div className="flex w-full max-w-2xl flex-col gap-4">
-          <div className="fade-in" style={{ animationDelay: "0.3s" }}>
-            <RecordButton
-              recording={recording}
-              onClick={handleStartRecording}
-              disabled={testKnocking}
-              onMagicGenerated={(intervals, description) => {
-                setKnockPassword(intervals);
-                setAiDescription(description);
-                setRecordPrompt("Random Rhythm Loaded! Try 'Test Knock' to verify.");
-                setError(null);
-              }}
-              onMagicError={(msg) => setError("Magic Error: " + msg)}
-            />
-          </div>
+          {accessStatus === "GRANTED" && (
+            <div className="fade-in" style={{ animationDelay: "0.3s" }}>
+              <RecordButton
+                recording={recording}
+                onClick={handleStartRecording}
+                disabled={testKnocking}
+                onMagicGenerated={(intervals, description) => {
+                  setKnockPassword(intervals);
+                  saveKnockPattern(intervals);
+                  setAiDescription(description);
+                  setRecordPrompt("Random Rhythm Loaded! Try 'Test Knock' to verify.");
+                  setError(null);
+                }}
+                onMagicError={(msg) => setError("Magic Error: " + msg)}
+              />
+            </div>
+          )}
           {recording && recordPrompt && (
             <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">
               {recordPrompt}
@@ -460,45 +484,47 @@ export default function SetKnock() {
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}
 
-          {/* AI INPUT SECTION */}
-          <div className="fade-in flex flex-col gap-2 mt-4" style={{ animationDelay: "1.05s" }}>
-             <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={aiPrompt}
-                    onChange={(e) => setAiPrompt(e.target.value)}
-                    onKeyDown={handleAiSubmit}
+          {/* AI INPUT SECTION — only show when no stored pattern */}
+          {accessStatus === "GRANTED" && (
+            <div className="fade-in flex flex-col gap-2 mt-4" style={{ animationDelay: "1.05s" }}>
+               <div className="flex gap-2">
+                  <input
+                      type="text"
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      onKeyDown={handleAiSubmit}
+                      disabled={aiLoading}
+                      placeholder="Name your rhythm to summon a Sacred Cadence, or leave blank to let Fate decide."
+                      className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 placeholder:text-xs outline-none focus:border-foreground/30 disabled:opacity-50"
+                  />
+                  <button
+                    onClick={() => handleAiSubmit()}
                     disabled={aiLoading}
-                    placeholder="Name your rhythm to summon a Sacred Cadence, or leave blank to let Fate decide."
-                    className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 placeholder:text-xs outline-none focus:border-foreground/30 disabled:opacity-50"
-                />
-                <button
-                  onClick={() => handleAiSubmit()}
-                  disabled={aiLoading || !aiPrompt}
-                  className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {aiLoading ? "..." : "Go"}
-                </button>
-             </div>
+                    className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {aiLoading ? "..." : "Go"}
+                  </button>
+               </div>
 
-            <div className="w-full rounded-lg border border-foreground/10 bg-foreground/5 p-4 min-h-[80px] flex items-center justify-between">
-                <div>
-                  {aiDescription ? (
-                    <p className="text-foreground font-semibold">{aiDescription}</p>
-                  ) : (
-                    <p className="text-foreground/60">AI response will appear here.</p>
+              <div className="w-full rounded-lg border border-foreground/10 bg-foreground/5 p-4 min-h-[80px] flex items-center justify-between">
+                  <div>
+                    {aiDescription ? (
+                      <p className="text-foreground font-semibold">{aiDescription}</p>
+                    ) : (
+                      <p className="text-foreground/60">AI response will appear here.</p>
+                    )}
+                  </div>
+                  {aiDescription && knockPassword && (
+                      <button
+                         onClick={playCurrentRhythm}
+                         className="ml-4 p-2 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-bold"
+                      >
+                         ▶ Play
+                      </button>
                   )}
-                </div>
-                {aiDescription && knockPassword && (
-                    <button
-                       onClick={playCurrentRhythm}
-                       className="ml-4 p-2 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-bold"
-                    >
-                       ▶ Play
-                    </button>
-                )}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>

@@ -27,8 +27,8 @@ export default function TestKnockButton({
       onClick={onClick}
       disabled={disabled}
       className={`w-full btn-flip cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-      data-front="TEST KNOCK"
-      data-back="TEST KNOCK"
+      data-front="KNOCK"
+      data-back="KNOCK"
       style={{
         "--flip-front-bg": "#9333ea",
         "--flip-front-color": "#ffffff",

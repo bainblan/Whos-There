@@ -8,7 +8,9 @@ export default function Door({ knocking, open, onClose }: { knocking: boolean; o
         alt={open ? "Door open" : "Door closed"}
         width={open ? 621 : 400}
         height={open ? 700 : 700}
-        className="h-[700px] w-auto border-white object-contain"
+        className={`h-[700px] w-auto border-white object-contain transition-transform duration-100 ${
+          open && knocking ? "scale-95" : "scale-100"
+        }`}
         priority
       />
       {!open && (
